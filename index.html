@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Proposal Helper — Write Better Freelance Proposals, Faster</title>
+<meta name="description" content="Paste a job post and get a tailored, client-focused proposal draft in seconds. Free and private, runs in your browser." />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg:#f3f6f4; --card:#fff; --text:#132018; --muted:#5b6b62; --line:#dfe7e2; --brand:#14a800; --brand2:#0e7a00; --soft:#eaf7e6; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Inter, system-ui, sans-serif; background:var(--bg); color:var(--text); }
+  .wrap { max-width:1180px; margin:0 auto; padding:28px 16px 56px; }
+  header h1 { margin:0; font-size:26px; letter-spacing:-.02em; } header p { margin:4px 0 20px; color:var(--muted); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; }
+  h2 { font-size:15px; margin:0 0 10px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  label { display:block; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin:12px 0 5px; }
+  textarea, input, select { width:100%; font:inherit; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#fff; }
+  textarea { resize:vertical; }
+  #job { min-height:220px; } #out { min-height:430px; line-height:1.55; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .btn { border:0; border-radius:10px; padding:10px 14px; font:inherit; font-weight:600; cursor:pointer; background:var(--soft); color:var(--brand2); }
+  .btn.primary { background:var(--brand); color:#fff; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; min-height:28px; }
+  .chip { font-size:12px; padding:4px 10px; border-radius:99px; background:var(--soft); color:var(--brand2); font-weight:600; }
+  .chip.q { background:#fff4e5; color:#a35b00; }
+  .count { font-size:12px; color:var(--muted); }
+  .tips { font-size:13px; color:var(--muted); margin:10px 0 0; padding-left:18px; } .tips li { margin:3px 0; }
+  details { margin-top:14px; } summary { cursor:pointer; font-weight:600; font-size:14px; }
+  footer { text-align:center; color:var(--muted); font-size:13px; margin-top:32px; } footer a { color:var(--brand2); font-weight:600; text-decoration:none; }
+  @media (max-width:860px) { .grid, .row { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>✍️ Proposal Helper</h1>
+    <p>Paste a job post. Get a tailored, client-focused proposal draft you can polish and send in a few minutes.</p>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>1 · Job post</h2>
+      <textarea id="job" placeholder="Paste the full job description here…"></textarea>
+      <div class="chips" id="chips"></div>
+      <div class="row">
+        <div><label for="client">Client name (optional)</label><input id="client" placeholder="e.g. Sarah" /></div>
+        <div><label for="tone">Tone</label>
+          <select id="tone"><option value="friendly">Friendly & confident</option><option value="formal">Formal</option><option value="short">Short & direct</option></select></div>
+      </div>
+
+      <details open>
+        <summary>2 · About you (saved in this browser)</summary>
+        <div class="row">
+          <div><label for="name">Your name</label><input id="name" placeholder="Ali Akbar" /></div>
+          <div><label for="years">Years of experience</label><input id="years" placeholder="5" /></div>
+        </div>
+        <label for="role">What you do (one line)</label><input id="role" placeholder="WordPress & Elementor developer who builds fast, lead-generating websites" />
+        <label for="projects">Relevant past projects (one per line: Name — result — link)</label>
+        <textarea id="projects" rows="4" placeholder="Monkbot — WordPress site + AI chatbot, 374+ conversations — https://monkbot.ai&#10;Meyrin Basket — dynamic Crocoblock club website — https://meyrin-basket.ch"></textarea>
+      </details>
+      <button class="btn primary" id="go" style="width:100%; margin-top:14px">Generate proposal</button>
+      <ul class="tips">
+        <li>The first 2 lines show in the client's preview, so the draft opens with <b>their</b> problem, not your bio.</li>
+        <li>Detected questions in the post are answered in a dedicated section. Fill them in honestly.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>3 · Your draft <span><span class="count" id="count">0 / 5000</span> <button class="btn" id="copy">Copy</button></span></h2>
+      <textarea id="out" placeholder="Your proposal will appear here. Edit freely before sending."></textarea>
+    </section>
+  </div>
+  <footer>Everything runs in your browser — nothing is sent anywhere. Made by <a href="https://github.com/Aliakbar45480">Ali Akbar</a> · <a href="https://www.upwork.com/freelancers/~014c9f290133791047">Hire me</a></footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const SKILLS = ['WordPress','Elementor','Elementor Pro','WooCommerce','Crocoblock','JetEngine','JetSmartFilters','Divi','Gutenberg','Shopify','Wix','Webflow','Framer','Figma','Adobe XD','Photoshop',
+  'HTML','CSS','JavaScript','TypeScript','React','Next.js','Vue','Tailwind','Bootstrap','PHP','Laravel','Node.js','Python','Django','MySQL','API','REST API',
+  'SEO','Page speed','Core Web Vitals','Landing page','Redesign','Responsive','Mobile','E-commerce','Membership','Directory','Booking','Multilingual','WPML',
+  'Chatbot','AI','OpenAI','ChatGPT','Automation','Zapier','Make','Stripe','PayPal','Hosting','Migration','Maintenance','Security','Logo','UI/UX','Copywriting'];
+const PROFILE_KEY = 'proposal-helper-profile';
+
+function analyze(text) {
+  const lower = text.toLowerCase();
+  const skills = SKILLS.filter(s => new RegExp('(^|[^a-z])' + s.toLowerCase().replace(/[.*+?^${}()|[\]\\\/]/g,'\\$&') + '([^a-z]|$)').test(lower));
+  const questions = text.split(/\n|(?<=\?)\s+/).map(s => s.trim().replace(/^[-•*\d.)\s]+/,'')).filter(s => s.endsWith('?') && s.length > 8 && s.length < 220);
+  const sentences = text.replace(/\s+/g,' ').split(/(?<=[.!?])\s+/).filter(s => s.length > 25);
+  const goal = sentences.find(s => /\b(need|looking for|want|seeking|require|help)\b/i.test(s)) || sentences[0] || '';
+  const deadline = (text.match(/\b(asap|urgent|within \d+ (days?|weeks?)|by (monday|tuesday|wednesday|thursday|friday|next week|end of \w+))\b/i) || [])[0];
+  const keyword = (text.match(/\b(?:start (?:your|the) (?:proposal|application|reply|cover letter) with|begin (?:your|the) (?:proposal|application|reply) with|include|mention|write)\s+(?:the\s+)?(?:word|phrase|keyword|code)?\s*[:"“']*\s*([A-Za-z0-9-]{3,20})/i) || [])[1];
+  return { skills, questions: [...new Set(questions)].slice(0,6), goal: goal.trim(), deadline, keyword };
+}
+
+function clean(goal) {
+  return goal.replace(/^(hi|hello|hey)[^,.!]*[,.!]\s*/i,'').replace(/^(we|i)\s+(are|am)\s+(looking for|seeking)\s+/i,'').replace(/^(we|i)\s+(need|want|require)\s+/i,'').replace(/[.!?]+$/,'')
+    .replace(/\bour\b/gi,'your').replace(/\bours\b/gi,'yours').replace(/\bus\b/g,'you').replace(/\bwe\b/gi,'you').replace(/\bmy\b/gi,'your').replace(/\bI\b/g,'you');
+}
+
+function generate() {
+  const job = $('#job').value.trim();
+  if (!job) { $('#out').value = 'Paste a job post first 🙂'; return; }
+  const a = analyze(job), p = profile(), tone = $('#tone').value;
+  const hi = $('#client').value.trim() ? `Hi ${$('#client').value.trim()},` : 'Hi there,';
+  const need = clean(a.goal) || 'this project';
+  const sk = a.skills.slice(0,4);
+  const skillTxt = sk.length ? sk.slice(0,-1).join(', ') + (sk.length > 1 ? ' and ' : '') + sk.slice(-1) : 'exactly this kind of work';
+  const projects = p.projects.split('\n').map(s => s.trim()).filter(Boolean).slice(0,2);
+  const L = [];
+  if (a.keyword) L.push(a.keyword);
+  L.push(hi, '');
+  if (tone === 'short') {
+    L.push(`I can help with ${need.charAt(0).toLowerCase() + need.slice(1)}. I work with ${skillTxt} every day${p.years ? ` (${p.years}+ years)` : ''}.`);
+  } else {
+    L.push(`I read your post carefully: you need ${need.charAt(0).toLowerCase() + need.slice(1)}. That's ${tone==='formal' ? 'precisely the type of project I specialise in' : 'right in my wheelhouse'}, and I'd love to help you get it done properly${a.deadline ? ` (and ${a.deadline.toLowerCase()} works for me)` : ''}.`);
+    L.push('', `I'm ${p.name || '[your name]'}, ${p.role || '[what you do]'}${p.years ? `, with ${p.years}+ years of experience` : ''}. I work with ${skillTxt} daily.`);
+  }
+  if (projects.length) { L.push('', tone==='short' ? 'Similar work:' : 'Here is similar work I have delivered:'); projects.forEach(pr => L.push('• ' + pr)); }
+  if (tone !== 'short') {
+    L.push('', 'How I would approach it:',
+      '1. A quick call or chat to confirm goals, must-have features and examples you like',
+      `2. ${sk.some(s => /figma|ui|design|redesign/i.test(s)) ? 'Design the key pages for your approval' : 'Share a clear plan, timeline and milestones'}`,
+      `3. Build${sk.length ? ' with ' + sk.slice(0,2).join(' & ') : ''}, sharing progress so there are no surprises`,
+      '4. Test on all devices, launch, and support you after delivery');
+  }
+  if (a.questions.length) { L.push('', 'Answers to your questions:'); a.questions.forEach(q => L.push(`• ${q}\n  → [your answer]`)); }
+  L.push('', tone==='formal'
+    ? 'I would welcome the opportunity to discuss your project. Could you share any reference websites or materials so I can provide an accurate estimate?'
+    : `Quick question so I can give you an exact quote: do you already have ${sk.some(s=>/figma|design/i.test(s)) ? 'the designs ready' : 'content and branding (logo, colors) ready'}, or should I help with that too?`);
+  L.push('', tone==='formal' ? 'Kind regards,' : 'Best,', p.name || '[your name]');
+  $('#out').value = L.join('\n');
+  count();
+}
+
+function profile() { return { name: $('#name').value.trim(), years: $('#years').value.trim(), role: $('#role').value.trim(), projects: $('#projects').value }; }
+function saveProfile() { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile())); } catch {} }
+function loadProfile() { try { const p = JSON.parse(localStorage.getItem(PROFILE_KEY)); if (p) { $('#name').value=p.name||''; $('#years').value=p.years||''; $('#role').value=p.role||''; $('#projects').value=p.projects||''; } } catch {} }
+function count() { const n = $('#out').value.length; $('#count').textContent = `${n} / 5000`; $('#count').style.color = n > 5000 ? '#c2410c' : ''; }
+function chips() {
+  const a = analyze($('#job').value);
+  $('#chips').innerHTML = a.skills.map(s => `<span class="chip">${s}</span>`).join('') + (a.questions.length ? `<span class="chip q">${a.questions.length} question${a.questions.length>1?'s':''} found</span>` : '') + (a.keyword ? `<span class="chip q">Keyword: ${a.keyword}</span>` : '');
+}
+
+['name','years','role','projects'].forEach(id => $('#'+id).addEventListener('input', saveProfile));
+$('#job').addEventListener('input', chips);
+$('#out').addEventListener('input', count);
+$('#go').onclick = generate;
+$('#copy').onclick = () => navigator.clipboard?.writeText($('#out').value).then(() => { $('#copy').textContent = 'Copied ✓'; setTimeout(() => $('#copy').textContent = 'Copy', 1200); });
+loadProfile();
+</script>
+</body>
+</html>
